@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 key = os.getenv('API_KEY')
+phone_load = os.getenv('PHONE')
 
 message_template_cobrança = 'Identificamos que você está com cobrança(s) aberta(s)\n segue anexos:'
 
@@ -24,11 +25,9 @@ def validar_message(message):
 def enviar_mensagem(phone_send: str, message: str):
   url_send_msg = "https://app.whatsgw.com.br/api/WhatsGw/Send"
   
-  phone_current = '5585989427436'
-
   payload_msg={
   "apikey" : key,
-  "phone_number" : phone_current,
+  "phone_number" : phone_load,
   "contact_phone_number" : phone_send,
   "message_custom_id" : "yoursoftwareid",
   "message_type" : "text",

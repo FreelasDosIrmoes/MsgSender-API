@@ -6,7 +6,7 @@ from werkzeug.exceptions import *
 from flask import request, make_response, json
 from app import app_flask
 from app.service import *
-
+from time import sleep
 
 PATH_DEFAULT = "/api/message"
 
@@ -36,5 +36,6 @@ def send_msg_wpp():
     return make_response({'error': 'Número de Telefone Inválido', 'message': 'Exemplo: 5585912345678'}), 400
   
   enviar_mensagem(phone, message_template_cobrança)
+  sleep(1)
   
   return make_response({"status" : "sucess", "message" : f"Mensagem enviada com Sucesso para o número {phone}"})

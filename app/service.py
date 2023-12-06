@@ -61,7 +61,7 @@ def enviar_pdf(phone_send: str, pdf):
     "message_body_mimetype": "application/pdf",
     "message_body_filename": "RelatorioDAR.pdf",
     "message_caption": "caption",
-    "message_body": f"{pdf}"})
+    "message_body": f"{pdf_base64}"})
   headers = {
     'Content-Type': 'application/json'
   }

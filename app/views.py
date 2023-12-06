@@ -1,5 +1,4 @@
 import re
-import base64
 import flask
 
 from werkzeug.exceptions import *
@@ -24,14 +23,7 @@ def handle_exception(e: HTTPException):
 def send_msg_wpp():
   if request.method != 'POST':
     raise MethodNotAllowed
-  
-  # if 'arquivo' not in request.files:
-  #   return 'Nenhum arquivo enviado', 400
 
-  file = request.files['arquivo']
-  
-  print(file)
-  requesta = request.headers
   data = request.get_json()
   
   if 'phone' not in data:
@@ -42,12 +34,12 @@ def send_msg_wpp():
   
   phone = data['phone']
   pdf = data['pdf']
-  
+
   if not validar_numero(phone):
     return make_response({'error': 'Número de Telefone Inválido', 'message': 'Exemplo: 5585912345678'}), 400
   
   enviar_mensagem(phone, message_template_cobrança)
-  sleep(1)
-  enviar_pdf(phone, pdf)
+  for p in pdf:
+    enviar_pdf(phone, p)
   
   return make_response({"status" : "sucess", "message" : f"Mensagem enviada com Sucesso para o número {phone}"})

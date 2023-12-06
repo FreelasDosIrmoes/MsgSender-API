@@ -44,7 +44,7 @@ def enviar_mensagem(phone_send: str, message: str):
   response = requests.request("POST", url_send_msg, headers=headers, data=payload_msg)
   
   if response.status_code != 200:
-    return jsonify({'erro': 'Número de Telefone Inválido || Exemplo: 5585912345678'}), 400
+    return jsonify({'error': 'Número de Telefone Inválido || Exemplo: 5585912345678'}), 400
 
 def enviar_pdf(phone_send: str, pdf):
   url_send_pdf = "https://app.whatsgw.com.br/api/WhatsGw/Send"
@@ -66,7 +66,7 @@ def enviar_pdf(phone_send: str, pdf):
     'Content-Type': 'application/json'
   }
 
-  response = requests.request("POST", url_send_pdf, headers=headers, data=payload)
-
-  print(response.text)
+  response = requests.request("POST", url_send_pdf, headers=headers, data=payload)   
   
+  if response.status_code != 200:
+    return jsonify({'error': 'Ocorreu algum problema ao enviar o PDF'}), 400  

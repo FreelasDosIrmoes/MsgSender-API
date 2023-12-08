@@ -7,7 +7,7 @@ from app import app_flask
 from app.service import *
 from time import sleep
 
-PATH_DEFAULT = "/api/message"
+PATH_DEFAULT = "/api/messages"
 
 
 @app_flask.errorhandler(HTTPException)
@@ -19,7 +19,7 @@ def handle_exception(e: HTTPException):
     }), e.code
 )
   
-@app_flask.route(f"{PATH_DEFAULT}/wpp", methods=['POST'])
+@app_flask.route(f"{PATH_DEFAULT}", methods=['POST'])
 def send_msg_wpp():
   if request.method != 'POST':
     raise MethodNotAllowed
@@ -32,14 +32,26 @@ def send_msg_wpp():
   if 'pdf' not in data:
     return make_response({"error": "O campo 'pdf' é obrigatório"}), 400
   
+  if 'email' not in data:
+    return make_response({"error": "O campo 'pdf' é obrigatório"}), 400
+  
   phone = data['phone']
   pdf = data['pdf']
+  email = data['email']
 
   if not validar_numero(phone):
     return make_response({'error': 'Número de Telefone Inválido', 'message': 'Exemplo: 5585912345678'}), 400
   
   enviar_mensagem(phone, message_template_cobrança)
   for p in pdf:
-    enviar_pdf(phone, p)
+    enviar_pdf_wpp(phone, p)
   
-  return make_response({"status" : "sucess", "message" : f"Mensagem enviada com Sucesso para o número {phone}"})
+  attached_pdfs = []
+  
+  for p in pdf:
+    dict = {'filename': 'RelatorioDAR.pdf', 'content': p}
+    attached_pdfs.append(dict)
+    
+  enviar_email(email, pdf, attached_pdfs)
+  
+  return make_response({"status" : "sucess", "message" : f"Mensagens enviadas com Sucesso para o número {phone} e email {email}"})

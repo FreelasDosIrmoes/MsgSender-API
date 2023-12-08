@@ -4,3 +4,4 @@ python-dotenv
 requests
 json
 jsonify
+flask_mail

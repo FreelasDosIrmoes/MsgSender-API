@@ -52,7 +52,7 @@ def enviar_mensagem(phone_send: str, message: str):
 def enviar_pdf_wpp(phone_send: str, pdf):
   url_send_pdf = "https://app.whatsgw.com.br/api/WhatsGw/Send"
   payload = json.dumps({
-    "apikey": "ad2eae3e-cffb-4bb3-b518-25da7dd36932",
+    "apikey": key,
     "phone_number": phone_load,
     "contact_phone_number": phone_send,
     "message_custom_id": "yoursoftwareid",

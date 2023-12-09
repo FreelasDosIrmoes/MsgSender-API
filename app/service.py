@@ -3,8 +3,12 @@ import os
 import requests
 import jsonify
 import json  
+import base64
 
 from dotenv import load_dotenv
+
+from flask import request, make_response
+from app import mail, Message, app_flask
 
 load_dotenv()
 key = os.getenv('API_KEY')
@@ -45,10 +49,10 @@ def enviar_mensagem(phone_send: str, message: str):
   if response.status_code != 200:
     return jsonify({'error': 'Número de Telefone Inválido || Exemplo: 5585912345678'}), 400
 
-def enviar_pdf(phone_send: str, pdf):
+def enviar_pdf_wpp(phone_send: str, pdf):
   url_send_pdf = "https://app.whatsgw.com.br/api/WhatsGw/Send"
   payload = json.dumps({
-    "apikey": "ad2eae3e-cffb-4bb3-b518-25da7dd36932",
+    "apikey": key,
     "phone_number": phone_load,
     "contact_phone_number": phone_send,
     "message_custom_id": "yoursoftwareid",
@@ -66,3 +70,17 @@ def enviar_pdf(phone_send: str, pdf):
   
   if response.status_code != 200:
     return jsonify({'error': 'Aconteceu algum erro ao enviar os PDFs'}), 400
+
+def enviar_email(email: str, pdf, attached_pdfs):
+  msg = Message('Cobrança IPTU', sender='nnoreply592@gmail.com', recipients=[email])
+  msg.body = 'Identificamos que você está com cobrança(s) aberta(s)\n segue anexos:'
+  
+  for pdf_data in attached_pdfs:
+        pdf_filename = pdf_data['filename']
+        pdf_content_base64 = pdf_data['content']
+        
+        pdf_content = base64.b64decode(pdf_content_base64)
+        
+        msg.attach(pdf_filename, 'application/pdf', pdf_content)
+  
+  mail.send(msg)

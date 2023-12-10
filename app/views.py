@@ -20,7 +20,7 @@ def handle_exception(e: HTTPException):
 )
   
 @app_flask.route(f"{PATH_DEFAULT}", methods=['POST'])
-def send_msg_wpp():
+def send_msgs():
   if request.method != 'POST':
     raise MethodNotAllowed
 
@@ -55,3 +55,49 @@ def send_msg_wpp():
   enviar_email(email, pdf, attached_pdfs)
   
   return make_response({"status" : "sucess", "message" : f"Mensagens enviadas com Sucesso para o número {phone} e email {email}"})
+
+@app_flask.route(f"{PATH_DEFAULT}/wpp", methods=['POST'])
+def send_msg_wpp():
+  if request.method != 'POST':
+    raise MethodNotAllowed
+  
+  data = request.get_json()
+  
+  if 'phone' not in data:
+    return make_response({"error": "O campo 'phone' é obrigatório"}), 400
+  
+  if 'pdf' not in data:
+    return make_response({"error": "O campo 'phone' é obrigatório"}), 400
+  
+  phone = data['phone']
+  pdf = data['pdf']
+  
+  if not validar_numero(phone):
+    return make_response({'error': 'Número de Telefone Inválido', 'message': 'Exemplo: 5585912345678'}), 400
+  
+  enviar_mensagem(phone, message_template_cobrança)
+  enviar_pdf_wpp(phone, pdf)
+
+  return make_response({"status" : "sucess", "message" : f"Mensagem enviada com Sucesso para o número {phone}"})
+
+@app_flask.route(f"{PATH_DEFAULT}/email", methods=['POST'])
+def send_msg_email():
+  if request.method != 'POST':
+    raise MethodNotAllowed
+  
+  data = request.get_json()
+  
+  if 'email' not in data:
+    return make_response({"error": "O campo 'phone' é obrigatório"}), 400
+  
+  if 'pdf' not in data:
+    return make_response({"error": "O campo 'phone' é obrigatório"}), 400
+  
+  email = data['email']
+  pdf = data['pdf']
+  
+  pdf_file_to_send = {'filename': 'RelatorioDAR.pdf', 'content': pdf}
+  
+  enviar_email(email, [pdf_file_to_send])
+  
+  return make_response({"status" : "sucess", "message" : f"Mensagem enviada com Sucesso para o email {email}"})

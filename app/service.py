@@ -71,7 +71,7 @@ def enviar_pdf_wpp(phone_send: str, pdf):
   if response.status_code != 200:
     return jsonify({'error': 'Aconteceu algum erro ao enviar os PDFs'}), 400
 
-def enviar_email(email: str, pdf, attached_pdfs):
+def enviar_email(email: str, attached_pdfs):
   msg = Message('Cobrança IPTU', sender='nnoreply592@gmail.com', recipients=[email])
   msg.body = 'Identificamos que você está com cobrança(s) aberta(s)\n segue anexos:'
   

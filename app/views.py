@@ -98,6 +98,6 @@ def send_msg_email():
   
   pdf_file_to_send = {'filename': 'RelatorioDAR.pdf', 'content': pdf}
   
-  enviar_email(email, pdf, [pdf_file_to_send])
+  enviar_email(email, [pdf_file_to_send])
   
   return make_response({"status" : "sucess", "message" : f"Mensagem enviada com Sucesso para o email {email}"})

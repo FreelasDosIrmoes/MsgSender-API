@@ -29,5 +29,7 @@ RUN apt-get update \
 # Instala as bibliotecas Python especificadas no arquivo requirements.txt.
 RUN pip install --no-cache-dir --force -r requirements.txt
 
+EXPOSE 5000
+
 # Define o comando padrão a ser executado quando o contêiner é iniciado.
 CMD [ "python", "-Bu", "main.py" ]

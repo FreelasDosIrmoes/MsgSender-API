@@ -1,7 +1,6 @@
 import os
 
 from flask import *
-from flask_migrate import Migrate
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 

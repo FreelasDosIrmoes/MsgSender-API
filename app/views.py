@@ -40,7 +40,7 @@ def send_msgs():
   email = data['email']
 
   if not validar_numero(phone):
-    return make_response({'error': 'Número de Telefone Inválido', 'message': 'Exemplo: 5585912345678'}), 400
+    return make_response({'error': 'Número de Telefone Inválido', 'message': 'Exemplo: 5585900000000'}), 400
   
   enviar_mensagem(phone, message_template_cobrança)
   for p in pdf:
@@ -52,7 +52,7 @@ def send_msgs():
     dict = {'filename': 'RelatorioDAR.pdf', 'content': p}
     attached_pdfs.append(dict)
     
-  enviar_email(email, pdf, attached_pdfs)
+  enviar_email(email, attached_pdfs)
   
   return make_response({"status" : "sucess", "message" : f"Mensagens enviadas com Sucesso para o número {phone} e email {email}"})
 

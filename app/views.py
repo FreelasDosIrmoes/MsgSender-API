@@ -33,7 +33,7 @@ def send_msgs():
     return make_response({"error": "O campo 'pdf' é obrigatório"}), 400
   
   if 'email' not in data:
-    return make_response({"error": "O campo 'pdf' é obrigatório"}), 400
+    return make_response({"error": "O campo 'email' é obrigatório"}), 400
   
   phone = data['phone']
   pdf = data['pdf']
@@ -44,15 +44,9 @@ def send_msgs():
   
   enviar_mensagem(phone, message_template_cobrança)
   for p in pdf:
-    enviar_pdf_wpp(phone, p)
+    enviar_mensagem(phone, p)
   
-  attached_pdfs = []
-  
-  for p in pdf:
-    dict = {'filename': 'RelatorioDAR.pdf', 'content': p}
-    attached_pdfs.append(dict)
-    
-  enviar_email(email, attached_pdfs)
+  enviar_email(email, pdf)
   
   return make_response({"status" : "sucess", "message" : f"Mensagens enviadas com Sucesso para o número {phone} e email {email}"})
 
@@ -76,7 +70,8 @@ def send_msg_wpp():
     return make_response({'error': 'Número de Telefone Inválido', 'message': 'Exemplo: 5585912345678'}), 400
   
   enviar_mensagem(phone, message_template_cobrança)
-  enviar_pdf_wpp(phone, pdf)
+  for p in pdf:
+    enviar_mensagem(phone, p)
 
   return make_response({"status" : "sucess", "message" : f"Mensagem enviada com Sucesso para o número {phone}"})
 
@@ -96,8 +91,6 @@ def send_msg_email():
   email = data['email']
   pdf = data['pdf']
   
-  pdf_file_to_send = {'filename': 'RelatorioDAR.pdf', 'content': pdf}
-  
-  enviar_email(email, [pdf_file_to_send])
+  enviar_email(email, pdf)
   
   return make_response({"status" : "sucess", "message" : f"Mensagem enviada com Sucesso para o email {email}"})

@@ -1,9 +1,6 @@
 import re
 import os
 import requests
-import jsonify
-import json  
-import base64
 
 from dotenv import load_dotenv
 
@@ -14,7 +11,7 @@ load_dotenv()
 key = os.getenv('API_KEY')
 phone_load = os.getenv('PHONE')
 
-message_template_cobrança = 'Identificamos que você está com cobrança(s) aberta(s)\n segue anexos:'
+message_template_cobrança = 'Identificamos que você está com cobrança(s) em aberto\nSegue os links para acessar os boletos:'
 
 
 def validar_numero(numero):
@@ -27,17 +24,17 @@ def validar_numero(numero):
 def validar_message(message):
   return len(message) > 20
     
-def enviar_mensagem(phone_send: str, message: str):
+def enviar_mensagem(phone_send: str, message):
   url_send_msg = "https://app.whatsgw.com.br/api/WhatsGw/Send"
   
-  payload_msg={
-  "apikey" : key,
-  "phone_number" : phone_load,
-  "contact_phone_number" : phone_send,
-  "message_custom_id" : "yoursoftwareid",
-  "message_type" : "text",
-  "message_body" : f"{message}",
-  "check_status" : "1"
+  payload_msg = {
+    "apikey" : key,
+    "phone_number" : phone_load,
+    "contact_phone_number" : phone_send,
+    "message_custom_id" : "yoursoftwareid",
+    "message_type" : "text",
+    "message_body" : f"{message}",
+    "check_status" : "1"
   }
   
   headers = {
@@ -47,40 +44,15 @@ def enviar_mensagem(phone_send: str, message: str):
   response = requests.request("POST", url_send_msg, headers=headers, data=payload_msg)
   
   if response.status_code != 200:
-    return jsonify({'error': 'Número de Telefone Inválido || Exemplo: 5585912345678'}), 400
+    return make_response({'error': 'Número de Telefone Inválido || Exemplo: 5585912345678'}), 400
 
-def enviar_pdf_wpp(phone_send: str, pdf):
-  url_send_pdf = "https://app.whatsgw.com.br/api/WhatsGw/Send"
-  payload = json.dumps({
-    "apikey": key,
-    "phone_number": phone_load,
-    "contact_phone_number": phone_send,
-    "message_custom_id": "yoursoftwareid",
-    "message_type": "document",
-    "check_status": "1",
-    "message_body_mimetype": "application/pdf",
-    "message_body_filename": "RelatorioDAR.pdf",
-    "message_caption": "",
-    "message_body": f"{pdf}"})
-  headers = {
-    'Content-Type': 'application/json'
-  }
 
-  response = requests.request("POST", url_send_pdf, headers=headers, data=payload)   
-  
-  if response.status_code != 200:
-    return jsonify({'error': 'Aconteceu algum erro ao enviar os PDFs'}), 400
-
-def enviar_email(email: str, attached_pdfs):
+def enviar_email(email: str, pdfs: list[str]):
   msg = Message('Cobrança IPTU', sender='nnoreply592@gmail.com', recipients=[email])
-  msg.body = 'Identificamos que você está com cobrança(s) aberta(s)\n segue anexos:'
-  
-  for pdf_data in attached_pdfs:
-        pdf_filename = pdf_data['filename']
-        pdf_content_base64 = pdf_data['content']
-        
-        pdf_content = base64.b64decode(pdf_content_base64)
-        
-        msg.attach(pdf_filename, 'application/pdf', pdf_content)
-  
+  msg.html = "<h1>Identificamos que você está com cobrança(s) em aberto</h1>" + "<br><br>"
+  msg.html += "<h2>Segue os links para acessar os boletos:</h2><br>"
+  msg.html += "<ul>"
+  for pdf in pdfs:
+        msg.html += pdf
+  msg.html += "</ul>"
   mail.send(msg)
